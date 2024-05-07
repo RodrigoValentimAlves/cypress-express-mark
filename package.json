@@ -6,6 +6,6 @@
   "author": "Rodrigo Valentim",
   "license": "MIT",
   "devDependencies": {
-    "cypress": "^13.8.1"
+    "cypress": "12.2.0"
   }
 }
