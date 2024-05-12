@@ -1,18 +1,62 @@
 /// <reference types="cypress" />
 
-import {faker} from '@faker-js/faker'
-
 describe('tasks', () => {
+    context('cadastro', () => {
+        it('deve cadastrar uma nova tarefa', () => {
 
-    it('deve cadastrar uma nova tarefa', () => {
-        cy.visit('localhost:3000')
+            const taskName = 'Ler livro de Node.js'
+    
+            cy.removeTasksByName(taskName)
+            cy.createTask(taskName)
+    
+            cy.contains('main div p', taskName)
+                .should('be.visible')
+        })
+    
+        it('não deve permitir tarefa duplicada', () => {
+    
+    
+            const task = {
+                name: 'Ler livro de Js',
+                is_done: false
+            }
+    
+            cy.removeTasksByName(task.name)
+            cy.postTask(task)
+            cy.createTask(task.name)
+    
+            cy.get('.swal2-html-container')
+                .should('be.visible')
+                .should('have.text', 'Task already exists!')
+    
+        })
+    
+        it('campo obrigatorio', () => {
+            cy.createTask()
+    
+            cy.isRequired('This is a required field')
+        })
+    })
+    context('atualização', () => {
+        it('deve concluir uma tarefa', () => {
+            const task = {
+                name : 'Ler livro de Node.js',
+                is_done: false
+            }
+            
 
-        cy.title().should('eq', 'Gerencie suas tarefas com Mark L')
+            cy.removeTasksByName(task.name)
+            cy.postTask(task)
 
-        cy.get('input[placeholder="Add a new Task"]').type(faker.music.songName())
+            cy.visit('http://localhost:3000')
 
-        cy.contains('button', 'Create').click()
+            cy.contains('p', task.name)
+                .parent()
+                .find('button[class*=ItemToggle]')
+                .click()
 
-        cy.get('body').click()
-    }) 
+                cy.contains('p', task.name)
+                .should('have.css', 'text-decoration-line', 'line-through')
+        })
+    })
 })
